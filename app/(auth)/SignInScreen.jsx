@@ -10,11 +10,16 @@ import { auth } from "../../config/firebase";
 export default function SignInScreen() {
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false); 
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [passError, setPassError] = useState("");
   const [error, setError] = useState("");
+
+  const [emailValid, setEmailValid] = useState(null);
+  const [passwordValid, setPasswordValid] = useState(null);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -36,15 +41,20 @@ export default function SignInScreen() {
 
     if (password.trim() === "") {
       setPassError("Password cannot be empty.");
+      setPasswordValid(false);
       valid = false;
     } else if (password.length < 8) {
       setPassError("Password must be at least 8 characters.");
+      setPasswordValid(false);
       valid = false;
     } else {
       setPassError("");
+      setPasswordValid(true);
     }
 
     if (!valid) return;
+
+    setLoading(true);
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -55,6 +65,8 @@ export default function SignInScreen() {
 
     } catch (err) {
       setError("Invalid email or password.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,16 +81,24 @@ export default function SignInScreen() {
       <InputText
         placeholder="Email"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={(text) => {
+          setEmail(text);
+          setEmailValid(text.trim() === "" ? null : validateEmail(text));
+        }}
         keyboardType="email-address"
+        isValid={emailValid}
       />
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
       <InputText
         placeholder="Password"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(text) => {
+          setPassword(text);
+          setPasswordValid(text.trim() === "" ? null : text.length >= 8);
+        }}
         secureTextEntry
+        isValid={passwordValid}
       />
       {passError ? <Text style={styles.errorText}>{passError}</Text> : null}
 
@@ -87,6 +107,7 @@ export default function SignInScreen() {
         onPress={handleSignIn}
         backgroundColor="#685CF0"
         textColor="white"
+        loading={loading}
       />
 
       <CustomButton

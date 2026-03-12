@@ -15,44 +15,48 @@ export default function Index() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView
         style={{
-          marginHorizontal: 30,
-          marginTop: 20,
           flex: 1,
-          backgroundColor: "#e6e3e3",
+          backgroundColor: "#e8e5e5",
         }}
       >
-        <Image
-          source={require("../assets/images/mypic.png")}
-          style={styles.image}
-        />
+        <View style={styles.mainContainer}>
+            <Image
+              source={require("../assets/images/mypic.png")}
+              style={styles.image}
+            />
 
-        <View style={styles.container}>
-          <Text style={styles.textTitle}>Welcome to Don Music ID</Text>
-          <Text style={styles.text}>
-            Welcome to the best Music Identification App in the world. Your
-            number stop avenue to identify and store your music
-          </Text>
-        </View>
-        <View style={{ marginTop: 35, flexDirection: "column", gap: 20 }}>
-          <CustomButton
-            title="Get Started | Sign Up"
-            onPress={() => router.push("/(auth)/SignUpScreen")}
-            textColor="white"
-          />
+            <View style={styles.container}>
+              <Text style={styles.textTitle}>Welcome to Don Music ID</Text>
+              <Text style={styles.text}>
+                Welcome to the best Music Identification App in the world. Your
+                number stop avenue to identify and store your music
+              </Text>
+            </View>
+            <View style={{ marginTop: 35, flexDirection: "column", gap: 20 }}>
+              <CustomButton
+                title="Get Started | Sign Up"
+                onPress={() => router.push("/(auth)/SignUpScreen")}
+                textColor="white"
+              />
 
-          <CustomButton
-            title="Sign In"
-            onPress={() => router.push("/(auth)/SignInScreen")}
-            backgroundColor="#ffff"
-            textColor="#7D7E83"
-          />
-        </View>
+              <CustomButton
+                title="Sign In"
+                onPress={() => router.push("/(auth)/SignInScreen")}
+                backgroundColor="#ffff"
+                textColor="#7D7E83"
+              />
+            </View>
+          </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    marginHorizontal: 30,
+    marginTop: 20,
+  },
   image: {
     width: 330,
     height: 385,

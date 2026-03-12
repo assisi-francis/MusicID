@@ -11,6 +11,7 @@ import { auth } from "../../config/firebase";
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); 
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,6 +29,8 @@ export default function ForgotPasswordScreen() {
       return;
     }
 
+    setLoading(true);
+
     try {
       await sendPasswordResetEmail(auth, email);
       Alert.alert(
@@ -37,6 +40,8 @@ export default function ForgotPasswordScreen() {
       router.back();
     } catch (err) {
       alert(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,6 +71,7 @@ export default function ForgotPasswordScreen() {
         onPress={handleReset}
         backgroundColor="#685CF0"
         textColor="white"
+        loading={loading}
       />
     </View>
   );

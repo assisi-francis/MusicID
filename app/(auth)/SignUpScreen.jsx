@@ -4,7 +4,7 @@ import CustomButton from "../../components/CustomButton";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useRouter } from "expo-router";
 import InputText from "../../components/InputText";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, reload, updateProfile } from "firebase/auth"; // import updateProfile
 import { auth } from "../../config/firebase";
 
 export default function SignUpScreen() {
@@ -17,19 +17,27 @@ export default function SignUpScreen() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
   const [error, setError] = useState("");
+  const [fnameError, setFnameError] = useState("");   
   const [passError, setPassError] = useState("");
 
   const [emailValid, setEmailValid] = useState(null);
   const [passwordValid, setPasswordValid] = useState(null);
   const [confirmPasswordValid, setConfirmPasswordValid] = useState(null);
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
-  };
+ const validateEmail = (email) => {
+  return email.includes("@") && email.includes(".");
+};
 
   const handleSignUp = async () => {
     let valid = true;
+
+    // First Name validation 
+    if (fname.trim() === "") {
+      setFnameError("First name cannot be empty.");
+      valid = false;
+    } else {
+      setFnameError("");
+    }
 
     // Email
     if (email.trim() === "") {
@@ -72,11 +80,23 @@ export default function SignUpScreen() {
     if (!valid) return;
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-      // 👉 Navigate to app home
-      router.replace("/WelcomeScreen");
-      // OR: router.replace("/(tabs)/home");
+      console.log("User created:", user.uid)
+
+      // Save full name as displayName immediately after account creation
+      await updateProfile(user, {
+        displayName: `${fname.trim()} ${surname.trim()}`,
+      });
+
+      await reload(user)
+      console.log("displayName after update:", auth.currentUser?.displayName);
+
+      router.replace({
+        pathname: "/(tabs)/home",
+        params: { displayName: `${fname.trim()} ${surname.trim()}` }
+      });
 
     } catch (err) {
       alert(err.message);
@@ -92,6 +112,8 @@ export default function SignUpScreen() {
       <Text style={styles.title}>Sign Up</Text>
 
       <InputText placeholder="First Name" value={fname} onChangeText={setFname} />
+      {fnameError ? <Text style={styles.errorText}>{fnameError}</Text> : null}
+
       <InputText placeholder="Surname" value={surname} onChangeText={setSurname} />
 
       <InputText
@@ -104,7 +126,6 @@ export default function SignUpScreen() {
         keyboardType="email-address"
         isValid={emailValid}
       />
-
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
       <InputText
@@ -128,7 +149,6 @@ export default function SignUpScreen() {
         secureTextEntry
         isValid={confirmPasswordValid}
       />
-
       {confirmPasswordValid === false && (
         <Text style={styles.errorText}>{passError}</Text>
       )}
@@ -156,24 +176,23 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: "center",
   },
-
   footerText: {
     marginTop: 15,
     textAlign: "center",
     color: "#685CF0",
   },
   backButton: {
-  position: "absolute",
-  top: 60,      // adjust for status bar / safe area
-  left: 20,
-  padding: 5,
-  zIndex: 1,
-},
-errorText: {
-  color: "red",
-  fontSize: 14,
-  fontFamily: "Poppins-Regular",
-  marginBottom: 10,
-  marginTop: -10,
-},
+    position: "absolute",
+    top: 60,
+    left: 20,
+    padding: 5,
+    zIndex: 1,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
+    fontFamily: "Poppins-Regular",
+    marginBottom: 10,
+    marginTop: -10,
+  },
 });
