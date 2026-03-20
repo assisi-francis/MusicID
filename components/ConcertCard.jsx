@@ -9,7 +9,7 @@ const ConcertCard = ({ image, dateRange, artistName, location }) => {
     <View style={{ marginTop: 10, gap: 4 }}>
       <Image
         source={image}
-        style={{ width: 165, height: 190, borderRadius: 20, resizeMode: "cover" }}
+        style={{ width: 165, height: 190, borderRadius: 20, contentFit: "cover" }}
       />
       <View style={{ flexDirection: "row", gap: 4 }}>
         <AntDesign name="calendar" size={15} color="#f00e0e" />

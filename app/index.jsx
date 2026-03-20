@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     height: 440,
     borderRadius: 20,
     marginBottom: 20,
-    resizeMode: 'stretch',
+    contentFit: 'stretch',
   },
   container: {
     flexDirection: "column",

@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     height: 385,
     borderRadius: 20,
     marginBottom: 20,
-    resizeMode: "cover",
+    contentFit: "cover",
   },
   container: {
     flexDirection: "column",
